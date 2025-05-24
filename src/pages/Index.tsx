@@ -199,6 +199,31 @@ const Index = () => {
     });
   };
 
+  // Delete handlers
+  const handleDeleteProject = (id: string) => {
+    const project = projects.find(p => p.id === id);
+    setProjects(projects.filter(project => project.id !== id));
+    if (project) {
+      toast({
+        title: "Voyage Abandoned",
+        description: `"${project.title}" has been removed from your adventures.`,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeleteEvent = (id: string) => {
+    const event = events.find(e => e.id === id);
+    setEvents(events.filter(event => event.id !== id));
+    if (event) {
+      toast({
+        title: "Sighting Removed",
+        description: `"${event.title}" has been cleared from the horizon.`,
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <>
       <style dangerouslySetInnerHTML={{
@@ -370,6 +395,7 @@ const Index = () => {
                 <VoyageProgress
                   projects={projects}
                   onAddProject={handleAddProject}
+                  onDeleteProject={handleDeleteProject}
                 />
               </div>
             </div>
@@ -380,6 +406,7 @@ const Index = () => {
                 <HorizonEvents
                   events={events}
                   onAddEvent={handleAddEvent}
+                  onDeleteEvent={handleDeleteEvent}
                 />
               </div>
             </div>

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Calendar, Clock, MapPin, Users } from "lucide-react";
+import { Plus, Calendar, Clock, MapPin, Users, Trash2 } from "lucide-react";
 
 interface Event {
   id: string;
@@ -18,9 +18,10 @@ interface Event {
 interface HorizonEventsProps {
   events: Event[];
   onAddEvent: () => void;
+  onDeleteEvent?: (id: string) => void;
 }
 
-const HorizonEvents: React.FC<HorizonEventsProps> = ({ events, onAddEvent }) => {
+const HorizonEvents: React.FC<HorizonEventsProps> = ({ events, onAddEvent, onDeleteEvent }) => {
   const getEventIcon = (type: string) => {
     switch (type) {
       case 'meeting': return '🍺';
@@ -48,7 +49,7 @@ const HorizonEvents: React.FC<HorizonEventsProps> = ({ events, onAddEvent }) => 
       {/* Header */}
       <div className="mb-6 text-center">
         <div className="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-black px-6 py-3 rounded-lg shadow-lg transform -rotate-1">
-          <h2 className="text-2xl font-bold tracking-wider">HORIZON EVENTS</h2>
+          <h2 className="text-2xl font-bold tracking-wider text-stroke-header">HORIZON EVENTS</h2>
         </div>
         <div className="text-yellow-400 text-4xl mt-2">🔭</div>
       </div>
@@ -96,7 +97,19 @@ const HorizonEvents: React.FC<HorizonEventsProps> = ({ events, onAddEvent }) => 
                 <div className="text-2xl">{getEventIcon(event.type)}</div>
                 
                 <div className="flex-1">
-                  <h3 className="font-semibold text-blue-900">{event.title}</h3>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-semibold text-blue-900">{event.title}</h3>
+                    {onDeleteEvent && (
+                      <Button
+                        onClick={() => onDeleteEvent(event.id)}
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 border-red-300 hover:bg-red-50 ml-2"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    )}
+                  </div>
                   
                   <div className="flex items-center gap-4 mt-2 text-sm text-blue-700">
                     <div className="flex items-center gap-1">

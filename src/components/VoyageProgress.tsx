@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Users, Clock, MapPin } from "lucide-react";
+import { Plus, Users, Clock, MapPin, Trash2 } from "lucide-react";
 
 interface Project {
   id: string;
@@ -19,15 +19,16 @@ interface Project {
 interface VoyageProgressProps {
   projects: Project[];
   onAddProject: () => void;
+  onDeleteProject?: (id: string) => void;
 }
 
-const VoyageProgress: React.FC<VoyageProgressProps> = ({ projects, onAddProject }) => {
+const VoyageProgress: React.FC<VoyageProgressProps> = ({ projects, onAddProject, onDeleteProject }) => {
   return (
     <div className="h-full">
       {/* Header */}
       <div className="mb-6 text-center">
         <div className="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-black px-6 py-3 rounded-lg shadow-lg transform rotate-1">
-          <h2 className="text-2xl font-bold tracking-wider">VOYAGE PROGRESS</h2>
+          <h2 className="text-2xl font-bold tracking-wider text-stroke-header">VOYAGE PROGRESS</h2>
         </div>
         <div className="text-yellow-400 text-4xl mt-2">⚓</div>
       </div>
@@ -40,9 +41,21 @@ const VoyageProgress: React.FC<VoyageProgressProps> = ({ projects, onAddProject 
             className="bg-gradient-to-br from-blue-50 via-cyan-50 to-blue-100 border-2 border-blue-400 shadow-lg hover:shadow-xl transform hover:scale-102 transition-all duration-300"
           >
             <CardHeader className="pb-3">
-              <CardTitle className="text-xl font-bold text-blue-900 flex items-center gap-2">
-                🗺️ {project.title}
-              </CardTitle>
+              <div className="flex justify-between items-start">
+                <CardTitle className="text-xl font-bold text-blue-900 flex items-center gap-2">
+                  🗺️ {project.title}
+                </CardTitle>
+                {onDeleteProject && (
+                  <Button
+                    onClick={() => onDeleteProject(project.id)}
+                    variant="outline"
+                    size="sm"
+                    className="text-red-600 border-red-300 hover:bg-red-50"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
               {project.description && (
                 <p className="text-blue-700 text-sm">{project.description}</p>
               )}
