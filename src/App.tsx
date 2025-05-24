@@ -9,12 +9,23 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Get the correct basename for GitHub Pages
+const getBasename = () => {
+  const isProduction = import.meta.env.PROD;
+  const isGitHubPages = window.location.hostname.includes('github.io');
+  
+  if (isProduction && isGitHubPages) {
+    return '/web-revamp-optimizer-ai';
+  }
+  return '';
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter basename={import.meta.env.PROD ? '/web-revamp-optimizer-ai' : ''}>
+      <BrowserRouter basename={getBasename()}>
         <Routes>
           <Route path="/" element={<Index />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
