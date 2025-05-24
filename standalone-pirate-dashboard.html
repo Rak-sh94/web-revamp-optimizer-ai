@@ -1,0 +1,627 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captain's Fleet Dashboard - One Piece Theme</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-in-left': 'slideInLeft 0.8s ease-out',
+                        'slide-in-right': 'slideInRight 0.8s ease-out',
+                        'bounce-gentle': 'bounceGentle 2s ease-in-out infinite',
+                        'glow-pulse': 'glowPulse 2s ease-in-out infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'sparkle': 'sparkle 2s ease-in-out infinite'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        slideInLeft: {
+                            '0%': { transform: 'translateX(-100px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' }
+                        },
+                        slideInRight: {
+                            '0%': { transform: 'translateX(100px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' }
+                        },
+                        bounceGentle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        glowPulse: {
+                            '0%, 100%': { textShadow: '0 0 5px rgba(239, 68, 68, 0.5)' },
+                            '50%': { textShadow: '0 0 20px rgba(239, 68, 68, 0.8), 0 0 30px rgba(239, 68, 68, 0.6)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '33%': { transform: 'translateY(-15px) rotate(1deg)' },
+                            '66%': { transform: 'translateY(-10px) rotate(-1deg)' }
+                        },
+                        sparkle: {
+                            '0%, 100%': { opacity: '0', transform: 'scale(0)' },
+                            '50%': { opacity: '1', transform: 'scale(1)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        .pirate-ship-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 25%, #1e40af 50%, #1e3a8a 75%, #312e81 100%);
+            position: relative;
+        }
+        .pirate-ship-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+        }
+        .text-stroke-header {
+            color: #ffd700;
+            text-shadow: 3px 3px 0px #000, -3px -3px 0px #000, 3px -3px 0px #000, -3px 3px 0px #000, 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        .enhanced-button {
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+            border: 2px solid #60a5fa;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        .enhanced-button:hover {
+            background: linear-gradient(45deg, #1e40af, #2563eb);
+            box-shadow: 0 6px 25px rgba(59, 130, 246, 0.5);
+            transform: translateY(-2px);
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            color: #ffd700;
+            padding: 16px;
+            border-radius: 8px;
+            border: 2px solid #ffd700;
+            z-index: 1000;
+            animation: slideInRight 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Custom toast hook
+        const useToast = () => {
+            const [toasts, setToasts] = useState([]);
+
+            const toast = ({ title, description }) => {
+                const id = Date.now();
+                const newToast = { id, title, description };
+                setToasts(prev => [...prev, newToast]);
+                
+                setTimeout(() => {
+                    setToasts(prev => prev.filter(t => t.id !== id));
+                }, 3000);
+            };
+
+            return { toast, toasts };
+        };
+
+        // Gamification hook
+        const useGamification = () => {
+            const [captainLevel, setCaptainLevel] = useState(() => {
+                const saved = localStorage.getItem('captainLevel');
+                return saved ? parseInt(saved) : 1;
+            });
+            
+            const [experiencePoints, setExperiencePoints] = useState(() => {
+                const saved = localStorage.getItem('experiencePoints');
+                return saved ? parseInt(saved) : 75;
+            });
+
+            const [pirateCoins, setPirateCoins] = useState(() => {
+                const saved = localStorage.getItem('pirateCoins');
+                return saved ? parseInt(saved) : 250;
+            });
+
+            useEffect(() => {
+                localStorage.setItem('captainLevel', captainLevel.toString());
+                localStorage.setItem('experiencePoints', experiencePoints.toString());
+                localStorage.setItem('pirateCoins', pirateCoins.toString());
+            }, [captainLevel, experiencePoints, pirateCoins]);
+
+            const getCaptainRank = (level) => {
+                if (level >= 20) return { rank: 'Admiral', color: 'text-purple-400', icon: '👑' };
+                if (level >= 10) return { rank: 'Captain', color: 'text-yellow-400', icon: '⚓' };
+                if (level >= 5) return { rank: 'First Mate', color: 'text-blue-400', icon: '🗡️' };
+                return { rank: 'Cadet', color: 'text-green-400', icon: '🦜' };
+            };
+
+            const addExperience = (points, toastFn) => {
+                const newXP = experiencePoints + points;
+                const newLevel = Math.floor(newXP / 100) + 1;
+                
+                if (newLevel > captainLevel) {
+                    setCaptainLevel(newLevel);
+                    toastFn({
+                        title: "🎉 RANK UP!",
+                        description: `You've reached ${getCaptainRank(newLevel).rank} level ${newLevel}!`,
+                    });
+                }
+                
+                setExperiencePoints(newXP);
+                setPirateCoins(prev => prev + points);
+            };
+
+            return {
+                captainLevel,
+                experiencePoints,
+                pirateCoins,
+                addExperience,
+                getCaptainRank
+            };
+        };
+
+        // Toast component
+        const ToastContainer = ({ toasts }) => (
+            <div className="fixed top-4 right-4 z-50 space-y-2">
+                {toasts.map(toast => (
+                    <div key={toast.id} className="toast">
+                        <div className="font-bold">{toast.title}</div>
+                        <div className="text-sm">{toast.description}</div>
+                    </div>
+                ))}
+            </div>
+        );
+
+        // Header component
+        const Header = ({ captainLevel, experiencePoints, pirateCoins, getCaptainRank, onExportData }) => {
+            const rank = getCaptainRank(captainLevel);
+            
+            return (
+                <header className="relative z-30 bg-black/50 backdrop-blur-sm border-b-2 border-yellow-400/50 p-4">
+                    <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+                        <div className="flex items-center space-x-4">
+                            <span className="text-2xl">{rank.icon}</span>
+                            <div>
+                                <h2 className={`text-lg font-bold ${rank.color}`}>
+                                    {rank.rank} Level {captainLevel}
+                                </h2>
+                                <div className="text-sm text-gray-300">
+                                    XP: {experiencePoints % 100}/100
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-6">
+                            <div className="flex items-center space-x-2">
+                                <span className="text-yellow-400">🪙</span>
+                                <span className="text-yellow-400 font-bold">{pirateCoins}</span>
+                            </div>
+                            
+                            <button
+                                onClick={onExportData}
+                                className="enhanced-button text-white px-4 py-2 rounded-lg font-semibold"
+                            >
+                                📜 Export Logbook
+                            </button>
+                        </div>
+                    </div>
+                </header>
+            );
+        };
+
+        // Task component
+        const TaskItem = ({ task, onToggle, onDelete }) => (
+            <div className={`p-3 rounded-lg border-2 ${task.completed ? 'bg-green-900/30 border-green-500' : 'bg-gray-800/50 border-gray-600'} transition-all duration-300`}>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                        <input
+                            type="checkbox"
+                            checked={task.completed}
+                            onChange={() => onToggle(task.id)}
+                            className="w-5 h-5 text-yellow-400 rounded"
+                        />
+                        <span className={`${task.completed ? 'line-through text-gray-500' : 'text-white'}`}>
+                            {task.title}
+                        </span>
+                        <span className={`px-2 py-1 rounded text-xs ${
+                            task.priority === 'high' ? 'bg-red-500' : 
+                            task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
+                        }`}>
+                            {task.priority}
+                        </span>
+                    </div>
+                    <button
+                        onClick={() => onDelete(task.id)}
+                        className="text-red-400 hover:text-red-300 transition-colors"
+                    >
+                        🗑️
+                    </button>
+                </div>
+            </div>
+        );
+
+        // Project component
+        const ProjectItem = ({ project, onDelete }) => (
+            <div className="p-4 rounded-lg bg-gray-800/50 border-2 border-blue-500/50">
+                <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-white font-semibold">{project.title}</h4>
+                    <button
+                        onClick={() => onDelete(project.id)}
+                        className="text-red-400 hover:text-red-300 transition-colors"
+                    >
+                        🗑️
+                    </button>
+                </div>
+                <p className="text-gray-300 text-sm mb-3">{project.description}</p>
+                <div className="bg-gray-700 rounded-full h-3 mb-2">
+                    <div 
+                        className="bg-blue-500 h-3 rounded-full transition-all duration-500"
+                        style={{ width: `${project.progress}%` }}
+                    ></div>
+                </div>
+                <div className="flex justify-between text-sm text-gray-400">
+                    <span>Progress: {project.progress}%</span>
+                    <span>Due: {project.deadline}</span>
+                </div>
+            </div>
+        );
+
+        // Event component
+        const EventItem = ({ event, onDelete }) => (
+            <div className="p-3 rounded-lg bg-gray-800/50 border-2 border-purple-500/50">
+                <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-2">
+                        <span className="text-lg">
+                            {event.type === 'meeting' ? '👥' : 
+                             event.type === 'deadline' ? '⏰' : 
+                             event.type === 'event' ? '🎉' : '📝'}
+                        </span>
+                        <h4 className="text-white font-semibold">{event.title}</h4>
+                    </div>
+                    <button
+                        onClick={() => onDelete(event.id)}
+                        className="text-red-400 hover:text-red-300 transition-colors"
+                    >
+                        🗑️
+                    </button>
+                </div>
+                <div className="text-sm text-gray-300">
+                    <p>{event.date} at {event.time}</p>
+                    {event.location && <p>📍 {event.location}</p>}
+                    {event.description && <p className="mt-1">{event.description}</p>}
+                </div>
+            </div>
+        );
+
+        // Add Task Form
+        const AddTaskForm = ({ onAdd }) => {
+            const [title, setTitle] = useState('');
+            const [priority, setPriority] = useState('medium');
+            const [dueDate, setDueDate] = useState('');
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (title.trim()) {
+                    onAdd({ title, priority, dueDate, completed: false });
+                    setTitle('');
+                    setDueDate('');
+                }
+            };
+
+            return (
+                <form onSubmit={handleSubmit} className="space-y-3">
+                    <input
+                        type="text"
+                        placeholder="New bounty..."
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className="w-full p-2 rounded bg-gray-800 text-white border border-gray-600 focus:border-yellow-400"
+                    />
+                    <div className="flex space-x-2">
+                        <select
+                            value={priority}
+                            onChange={(e) => setPriority(e.target.value)}
+                            className="flex-1 p-2 rounded bg-gray-800 text-white border border-gray-600"
+                        >
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                        <input
+                            type="date"
+                            value={dueDate}
+                            onChange={(e) => setDueDate(e.target.value)}
+                            className="flex-1 p-2 rounded bg-gray-800 text-white border border-gray-600"
+                        />
+                    </div>
+                    <button
+                        type="submit"
+                        className="w-full enhanced-button text-white p-2 rounded font-semibold"
+                    >
+                        ⚓ Add Bounty
+                    </button>
+                </form>
+            );
+        };
+
+        // Main App Component
+        const App = () => {
+            const { toast, toasts } = useToast();
+            const { captainLevel, experiencePoints, pirateCoins, addExperience, getCaptainRank } = useGamification();
+
+            // Load data from localStorage or initialize with sample data
+            const [tasks, setTasks] = useState(() => {
+                const saved = localStorage.getItem('onePiece_tasks');
+                return saved ? JSON.parse(saved) : [
+                    { id: '1', title: 'Find the One Piece', completed: false, priority: 'high', dueDate: '2024-12-31' },
+                    { id: '2', title: 'Master Gear 5', completed: false, priority: 'high' },
+                    { id: '3', title: 'Recruit Jinbe', completed: true, priority: 'medium' },
+                    { id: '4', title: 'Visit Elbaf', completed: false, priority: 'low' },
+                ];
+            });
+
+            const [projects, setProjects] = useState(() => {
+                const saved = localStorage.getItem('onePiece_projects');
+                return saved ? JSON.parse(saved) : [
+                    {
+                        id: '1',
+                        title: 'Reach Laugh Tale',
+                        description: 'The final island where One Piece awaits',
+                        progress: 75,
+                        deadline: '2024-12-31',
+                        teamMembers: ['Luffy', 'Zoro', 'Nami', 'Sanji'],
+                    },
+                    {
+                        id: '2',
+                        title: 'Liberate Wano',
+                        description: 'Free the people of Wano from tyranny',
+                        progress: 100,
+                        deadline: '2024-01-15',
+                        teamMembers: ['Luffy', 'Zoro', 'Law', 'Kid'],
+                    }
+                ];
+            });
+
+            const [events, setEvents] = useState(() => {
+                const saved = localStorage.getItem('onePiece_events');
+                return saved ? JSON.parse(saved) : [
+                    {
+                        id: '1',
+                        title: 'Crew Meeting',
+                        date: '2024-05-25',
+                        time: '10:00',
+                        type: 'meeting',
+                        location: 'Thousand Sunny',
+                        description: 'Plan next adventure route'
+                    },
+                    {
+                        id: '2',
+                        title: 'Training Session',
+                        date: '2024-05-26',
+                        time: '14:00',
+                        type: 'event',
+                        description: 'Haki training with Rayleigh'
+                    }
+                ];
+            });
+
+            // Task handlers
+            const handleAddTask = (task) => {
+                const newTask = { ...task, id: Date.now().toString() };
+                setTasks(prev => [...prev, newTask]);
+                addExperience(10, toast);
+                toast({
+                    title: "⚓ New Bounty Added!",
+                    description: `${task.title} has been logged in the ship's records.`,
+                });
+            };
+
+            const handleToggleTask = (id) => {
+                setTasks(prev => prev.map(task => {
+                    if (task.id === id) {
+                        const updatedTask = { ...task, completed: !task.completed };
+                        if (updatedTask.completed) {
+                            addExperience(15, toast);
+                            toast({
+                                title: "🏴‍☠️ Bounty Claimed!",
+                                description: `${task.title} has been completed!`,
+                            });
+                        }
+                        return updatedTask;
+                    }
+                    return task;
+                }));
+            };
+
+            const handleDeleteTask = (id) => {
+                setTasks(prev => prev.filter(task => task.id !== id));
+                toast({
+                    title: "🗑️ Bounty Removed",
+                    description: "Task has been struck from the records.",
+                });
+            };
+
+            const handleDeleteProject = (id) => {
+                setProjects(prev => prev.filter(project => project.id !== id));
+                toast({
+                    title: "🚢 Voyage Cancelled",
+                    description: "Project has been removed from the fleet.",
+                });
+            };
+
+            const handleDeleteEvent = (id) => {
+                setEvents(prev => prev.filter(event => event.id !== id));
+                toast({
+                    title: "🔭 Sighting Removed",
+                    description: "Event has been cleared from the horizon.",
+                });
+            };
+
+            const exportData = () => {
+                const data = { tasks, projects, events, captainLevel, experiencePoints, pirateCoins };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'captain-fleet-backup.json';
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                toast({
+                    title: "📜 Logbook Exported!",
+                    description: "Your fleet data has been saved to your device.",
+                });
+            };
+
+            // Save data to localStorage whenever state changes
+            useEffect(() => {
+                localStorage.setItem('onePiece_tasks', JSON.stringify(tasks));
+            }, [tasks]);
+
+            useEffect(() => {
+                localStorage.setItem('onePiece_projects', JSON.stringify(projects));
+            }, [projects]);
+
+            useEffect(() => {
+                localStorage.setItem('onePiece_events', JSON.stringify(events));
+            }, [events]);
+
+            return (
+                <div className="min-h-screen pirate-ship-bg text-white">
+                    <Header
+                        captainLevel={captainLevel}
+                        experiencePoints={experiencePoints}
+                        pirateCoins={pirateCoins}
+                        getCaptainRank={getCaptainRank}
+                        onExportData={exportData}
+                    />
+
+                    <div className="relative z-20 p-4 md:p-6">
+                        {/* Main Title */}
+                        <div className="text-center mb-8 animate-fade-in">
+                            <h1 className="text-4xl md:text-6xl font-bold text-stroke-header animate-bounce-gentle mb-4">
+                                🏴‍☠️ CAPTAIN'S FLEET DASHBOARD 🏴‍☠️
+                            </h1>
+                            <p className="text-xl md:text-2xl text-yellow-300 animate-glow-pulse">
+                                "Set sail for adventure and manage your crew's destiny!"
+                            </p>
+                        </div>
+
+                        {/* Three Column Layout */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto">
+                            {/* Left Column: Captain's Orders */}
+                            <div className="lg:col-span-1 animate-slide-in-left">
+                                <div className="glass-panel rounded-xl p-4 md:p-6 shadow-2xl h-full">
+                                    <h2 className="text-2xl font-bold text-yellow-400 mb-4 flex items-center">
+                                        ⚓ Captain's Orders
+                                        <span className="ml-2 text-sm bg-red-500 px-2 py-1 rounded-full">
+                                            {tasks.filter(t => !t.completed).length}
+                                        </span>
+                                    </h2>
+                                    
+                                    <AddTaskForm onAdd={handleAddTask} />
+                                    
+                                    <div className="mt-6 space-y-3 max-h-96 overflow-y-auto">
+                                        {tasks.map(task => (
+                                            <TaskItem
+                                                key={task.id}
+                                                task={task}
+                                                onToggle={handleToggleTask}
+                                                onDelete={handleDeleteTask}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Center Column: Voyage Progress */}
+                            <div className="lg:col-span-1 animate-fade-in">
+                                <div className="glass-panel rounded-xl p-4 md:p-6 shadow-2xl h-full">
+                                    <h2 className="text-2xl font-bold text-blue-400 mb-4 flex items-center">
+                                        🗺️ Voyage Progress
+                                        <span className="ml-2 text-sm bg-blue-500 px-2 py-1 rounded-full">
+                                            {projects.length}
+                                        </span>
+                                    </h2>
+                                    
+                                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                                        {projects.map(project => (
+                                            <ProjectItem
+                                                key={project.id}
+                                                project={project}
+                                                onDelete={handleDeleteProject}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Right Column: Horizon Events */}
+                            <div className="lg:col-span-1 animate-slide-in-right">
+                                <div className="glass-panel rounded-xl p-4 md:p-6 shadow-2xl h-full">
+                                    <h2 className="text-2xl font-bold text-purple-400 mb-4 flex items-center">
+                                        🔭 Horizon Events
+                                        <span className="ml-2 text-sm bg-purple-500 px-2 py-1 rounded-full">
+                                            {events.length}
+                                        </span>
+                                    </h2>
+                                    
+                                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                                        {events.map(event => (
+                                            <EventItem
+                                                key={event.id}
+                                                event={event}
+                                                onDelete={handleDeleteEvent}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer Quote */}
+                        <div className="text-center mt-12 animate-fade-in">
+                            <blockquote className="text-lg md:text-xl text-yellow-300 italic animate-float">
+                                "I'm gonna be King of the Pirates!" - Monkey D. Luffy
+                            </blockquote>
+                            <div className="mt-4 text-gray-400 text-sm">
+                                🌊 Navigate your dreams with the spirit of adventure! 🌊
+                            </div>
+                        </div>
+                    </div>
+
+                    <ToastContainer toasts={toasts} />
+                </div>
+            );
+        };
+
+        // Render the app
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
