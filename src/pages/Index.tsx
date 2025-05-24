@@ -1,15 +1,15 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
+import { useGamification } from "@/hooks/useGamification";
 import CaptainsOrders from "@/components/CaptainsOrders";
 import VoyageProgress from "@/components/VoyageProgress";
 import HorizonEvents from "@/components/HorizonEvents";
 import AddEventModal from "@/components/AddEventModal";
 import AddProjectModal from "@/components/AddProjectModal";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Settings, Moon, Sun, Download, Trophy, Star } from "lucide-react";
+import Header from "@/components/Header";
+import BackgroundEffects from "@/components/BackgroundEffects";
+import MainTitle from "@/components/MainTitle";
+import FooterQuote from "@/components/FooterQuote";
 
 interface Task {
   id: string;
@@ -41,6 +41,7 @@ interface Event {
 
 const Index = () => {
   const { toast } = useToast();
+  const { captainLevel, experiencePoints, pirateCoins, addExperience } = useGamification();
 
   // Load data from localStorage or initialize with sample data
   const [tasks, setTasks] = useState<Task[]>(() => {
@@ -119,21 +120,9 @@ const Index = () => {
   // Dark mode state
   const [isDarkMode, setIsDarkMode] = useState(true);
   
-  // Gamification state
-  const [captainLevel, setCaptainLevel] = useState(() => {
-    const saved = localStorage.getItem('captainLevel');
-    return saved ? parseInt(saved) : 1;
-  });
-  
-  const [experiencePoints, setExperiencePoints] = useState(() => {
-    const saved = localStorage.getItem('experiencePoints');
-    return saved ? parseInt(saved) : 75;
-  });
-
-  const [pirateCoins, setPirateCoins] = useState(() => {
-    const saved = localStorage.getItem('pirateCoins');
-    return saved ? parseInt(saved) : 250;
-  });
+  // Modal state
+  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
   // Save data to localStorage whenever state changes
   useEffect(() => {
@@ -153,142 +142,6 @@ const Index = () => {
     localStorage.setItem('experiencePoints', experiencePoints.toString());
     localStorage.setItem('pirateCoins', pirateCoins.toString());
   }, [captainLevel, experiencePoints, pirateCoins]);
-
-  // Modal state
-  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
-  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-
-  // Get captain rank based on level
-  const getCaptainRank = (level: number) => {
-    if (level >= 20) return { rank: 'Admiral', color: 'text-purple-400', icon: '👑' };
-    if (level >= 10) return { rank: 'Captain', color: 'text-yellow-400', icon: '⚓' };
-    if (level >= 5) return { rank: 'First Mate', color: 'text-blue-400', icon: '🗡️' };
-    return { rank: 'Cadet', color: 'text-green-400', icon: '🦜' };
-  };
-
-  const currentRank = getCaptainRank(captainLevel);
-
-  // Add experience points function
-  const addExperience = (points: number) => {
-    const newXP = experiencePoints + points;
-    const newLevel = Math.floor(newXP / 100) + 1;
-    
-    if (newLevel > captainLevel) {
-      setCaptainLevel(newLevel);
-      toast({
-        title: "🎉 RANK UP!",
-        description: `You've reached ${getCaptainRank(newLevel).rank} level ${newLevel}!`,
-      });
-    }
-    
-    setExperiencePoints(newXP);
-    setPirateCoins(prev => prev + points);
-  };
-
-  // Task handlers
-  const handleAddTask = (newTask: Omit<Task, 'id'>) => {
-    const task: Task = {
-      ...newTask,
-      id: Date.now().toString()
-    };
-    setTasks([...tasks, task]);
-    addExperience(5);
-    toast({
-      title: "⚔️ New Bounty Added!",
-      description: `"${task.title}" has been added to your hunt list. +5 XP!`,
-    });
-  };
-
-  const handleToggleTask = (id: string) => {
-    setTasks(tasks.map(task =>
-      task.id === id ? { ...task, completed: !task.completed } : task
-    ));
-    const task = tasks.find(t => t.id === id);
-    if (task && !task.completed) {
-      addExperience(10);
-      toast({
-        title: "🏆 Bounty Claimed!",
-        description: `"${task.title}" completed! +10 XP & 10 coins!`,
-      });
-    } else if (task) {
-      toast({
-        title: "⚡ Bounty Reopened!",
-        description: `"${task.title}" is back on the hunt.`,
-      });
-    }
-  };
-
-  const handleDeleteTask = (id: string) => {
-    const task = tasks.find(t => t.id === id);
-    setTasks(tasks.filter(task => task.id !== id));
-    if (task) {
-      toast({
-        title: "🚫 Bounty Abandoned",
-        description: `"${task.title}" has been removed from your list.`,
-        variant: "destructive"
-      });
-    }
-  };
-
-  const handleAddProject = () => {
-    setIsProjectModalOpen(true);
-  };
-
-  const handleAddEvent = () => {
-    setIsEventModalOpen(true);
-  };
-
-  // New handlers for actual adding
-  const handleAddNewProject = (newProject: Omit<Project, 'id'>) => {
-    const project: Project = {
-      ...newProject,
-      id: Date.now().toString()
-    };
-    setProjects([...projects, project]);
-    addExperience(15);
-    toast({
-      title: "🗺️ New Voyage Plotted!",
-      description: `"${project.title}" has been added to your adventures. +15 XP!`,
-    });
-  };
-
-  const handleAddNewEvent = (newEvent: Omit<Event, 'id'>) => {
-    const event: Event = {
-      ...newEvent,
-      id: Date.now().toString()
-    };
-    setEvents([...events, event]);
-    addExperience(3);
-    toast({
-      title: "🔭 New Sighting Logged!",
-      description: `"${event.title}" has been added to the horizon. +3 XP!`,
-    });
-  };
-
-  // Delete handlers
-  const handleDeleteProject = (id: string) => {
-    const project = projects.find(p => p.id === id);
-    setProjects(projects.filter(project => project.id !== id));
-    if (project) {
-      toast({
-        title: "⚓ Voyage Abandoned",
-        description: `"${project.title}" has been removed from your adventures.`,
-        variant: "destructive"
-      });
-    }
-  };
-
-  const handleDeleteEvent = (id: string) => {
-    const event = events.find(e => e.id === id);
-    setEvents(events.filter(event => event.id !== id));
-    if (event) {
-      toast({
-        title: "🌊 Sighting Removed",
-        description: `"${event.title}" has been cleared from the horizon.`,
-        variant: "destructive"
-      });
-    }
-  };
 
   const exportData = () => {
     const data = { tasks, projects, events, captainLevel, experiencePoints, pirateCoins };
@@ -467,131 +320,22 @@ const Index = () => {
         {/* Dark Overlay for Better Text Readability */}
         {isDarkMode && <div className="absolute inset-0 dark-overlay"></div>}
 
-        {/* Top Navigation Bar */}
-        <div className="relative z-30 bg-black/90 backdrop-blur-sm border-b-2 border-yellow-500/50 p-4">
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            {/* Captain Stats */}
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2">
-                <span className="text-2xl">{currentRank.icon}</span>
-                <div>
-                  <div className={`font-bold text-lg ${currentRank.color} text-enhanced`}>
-                    {currentRank.rank} Rakesh
-                  </div>
-                  <div className="text-yellow-300 text-sm font-semibold">Level {captainLevel}</div>
-                </div>
-              </div>
-              
-              {/* XP Bar */}
-              <div className="flex items-center space-x-3">
-                <div className="text-blue-300 font-semibold">XP:</div>
-                <div className="w-32">
-                  <Progress 
-                    value={(experiencePoints % 100)} 
-                    className="h-3 bg-gray-700"
-                  />
-                </div>
-                <div className="text-blue-200 text-sm font-bold">
-                  {experiencePoints % 100}/100
-                </div>
-              </div>
-              
-              {/* Pirate Coins */}
-              <div className="flex items-center space-x-2">
-                <span className="text-2xl animate-coin-flip">🪙</span>
-                <span className="text-yellow-400 font-bold text-lg text-enhanced">
-                  {pirateCoins}
-                </span>
-              </div>
-            </div>
+        {/* Header Component */}
+        <Header
+          captainLevel={captainLevel}
+          experiencePoints={experiencePoints}
+          pirateCoins={pirateCoins}
+          isDarkMode={isDarkMode}
+          onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
+          onExportData={exportData}
+        />
 
-            {/* Action Buttons */}
-            <div className="flex items-center space-x-3">
-              <Button
-                onClick={exportData}
-                variant="outline"
-                size="sm"
-                className="enhanced-button animate-button-bounce text-white border-blue-400 hover:bg-blue-600"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
-              
-              <Button
-                onClick={() => setIsDarkMode(!isDarkMode)}
-                variant="outline"
-                size="sm"
-                className="enhanced-button animate-button-bounce text-white border-yellow-400 hover:bg-yellow-600"
-              >
-                {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              </Button>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                className="enhanced-button animate-button-bounce text-white border-purple-400 hover:bg-purple-600"
-              >
-                <Settings className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Floating Mist/Fog Effects */}
-        <div className="absolute top-20 left-1/4 w-64 h-32 bg-white rounded-full blur-3xl opacity-5 animate-wave-motion"></div>
-        <div className="absolute top-40 right-1/3 w-48 h-24 bg-gray-300 rounded-full blur-3xl opacity-10 animate-wave-motion delay-1000"></div>
-        <div className="absolute bottom-32 left-1/3 w-56 h-28 bg-white rounded-full blur-3xl opacity-5 animate-wave-motion delay-2000"></div>
-
-        {/* Enhanced Animated Background Elements */}
-        <div className="absolute inset-0 opacity-20 z-10">
-          <div className="absolute top-20 left-10 text-6xl animate-wave-motion text-yellow-400">🌊</div>
-          <div className="absolute top-40 right-20 text-4xl animate-sparkle text-yellow-300">⭐</div>
-          <div className="absolute bottom-32 left-20 text-5xl animate-treasure-bounce text-yellow-500">🏴‍☠️</div>
-          <div className="absolute bottom-20 right-10 text-3xl animate-treasure-bounce delay-500 text-yellow-400">💎</div>
-          <div className="absolute top-60 left-1/4 text-3xl animate-spin duration-[8s] text-yellow-500">⚓</div>
-          <div className="absolute bottom-40 right-1/3 text-4xl animate-float text-yellow-400">🗺️</div>
-          <div className="absolute top-80 right-1/4 text-2xl animate-sparkle delay-300 text-yellow-500">💰</div>
-          <div className="absolute top-32 left-1/2 text-2xl animate-wiggle text-yellow-400">🦜</div>
-          <div className="absolute top-16 right-1/3 text-3xl animate-bounce delay-700 text-yellow-500">⚔️</div>
-          <div className="absolute bottom-16 left-1/3 text-2xl animate-pulse delay-1000 text-yellow-400">🍖</div>
-        </div>
-
-        {/* Enhanced Floating Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
-          <div className="absolute top-10 left-1/3 w-4 h-4 bg-yellow-500 rounded-full animate-ping"></div>
-          <div className="absolute top-1/3 right-10 w-3 h-3 bg-yellow-400 rounded-full animate-bounce delay-500"></div>
-          <div className="absolute bottom-1/3 left-10 w-5 h-5 bg-yellow-600 rounded-full animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-yellow-300 rounded-full animate-ping delay-700"></div>
-          <div className="absolute top-1/4 right-1/4 w-3 h-3 bg-yellow-500 rounded-full animate-bounce delay-200"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-4 h-4 bg-yellow-400 rounded-full animate-pulse delay-800"></div>
-        </div>
+        {/* Background Effects Component */}
+        <BackgroundEffects />
 
         <div className="relative z-20 p-4 md:p-6">
-          {/* Enhanced Header - Pirate theme with gold accents */}
-          <div className="text-center mb-6 md:mb-8">
-            <div className="relative inline-block">
-              {/* Anchor decorations */}
-              <div className="absolute -left-12 md:-left-16 top-1/2 transform -translate-y-1/2 text-3xl md:text-4xl text-yellow-400 animate-float">⚓</div>
-              <div className="absolute -right-12 md:-right-16 top-1/2 transform -translate-y-1/2 text-3xl md:text-4xl text-yellow-400 animate-float delay-500">⚓</div>
-              
-              {/* Main Header Text */}
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-stroke-header animate-header-glow tracking-wider mb-4">
-                CAPTAIN RAKESH'S FLEET
-              </h1>
-              
-              {/* Subtitle Quote */}
-              <div className="text-base md:text-lg lg:text-xl text-yellow-100 font-semibold italic mb-4 drop-shadow-lg text-enhanced px-4">
-                "Experience is not the number of years we spent, it's the number of situations we faced."
-              </div>
-              
-              {/* Decorative Icons */}
-              <div className="flex justify-center space-x-6 md:space-x-8 text-xl md:text-2xl">
-                <span className="text-yellow-500 animate-bounce">⚔️</span>
-                <span className="text-yellow-400 animate-sparkle">✖️</span>
-                <span className="text-yellow-500 animate-pulse">💎</span>
-              </div>
-            </div>
-          </div>
+          {/* Main Title Component */}
+          <MainTitle />
 
           {/* Three Column Layout with Enhanced Animations */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto animate-fade-in delay-300">
@@ -630,26 +374,8 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Enhanced Footer Quote */}
-          <div className="text-center mt-8 md:mt-12 animate-fade-in delay-700">
-            <div className="glass-panel rounded-2xl p-4 md:p-6 max-w-4xl mx-auto">
-              <div className="flex justify-center items-center space-x-4 mb-2">
-                <span className="text-xl md:text-2xl animate-bounce text-yellow-500">⚔️</span>
-                <div className="text-yellow-300 text-lg md:text-xl font-bold animate-glow-pulse text-enhanced">
-                  "THE SEA IS CALLING... SET SAIL TOWARDS YOUR DREAMS!"
-                </div>
-                <span className="text-xl md:text-2xl animate-bounce delay-300 text-yellow-500">🏴‍☠️</span>
-              </div>
-              <div className="text-yellow-100 text-base md:text-lg mt-2 animate-pulse text-enhanced">
-                - CAPTAIN JACK SPARROW
-              </div>
-              <div className="text-yellow-200 text-sm md:text-base mt-3 animate-fade-in delay-1000 text-enhanced px-4">
-                <span className="animate-wiggle inline-block text-yellow-500">🌊</span>
-                Navigate the treacherous waters of productivity with Captain Rakesh's legendary fleet management system!
-                <span className="animate-wiggle inline-block text-yellow-500">🌊</span>
-              </div>
-            </div>
-          </div>
+          {/* Footer Quote Component */}
+          <FooterQuote />
         </div>
       </div>
 
