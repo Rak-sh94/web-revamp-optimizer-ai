@@ -3,6 +3,8 @@ import { useToast } from "@/hooks/use-toast";
 import CaptainsOrders from "@/components/CaptainsOrders";
 import VoyageProgress from "@/components/VoyageProgress";
 import HorizonEvents from "@/components/HorizonEvents";
+import AddEventModal from "@/components/AddEventModal";
+import AddProjectModal from "@/components/AddProjectModal";
 
 interface Task {
   id: string;
@@ -122,6 +124,10 @@ const Index = () => {
     localStorage.setItem('onePiece_events', JSON.stringify(events));
   }, [events]);
 
+  // Modal state
+  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+
   // Task handlers
   const handleAddTask = (newTask: Omit<Task, 'id'>) => {
     const task: Task = {
@@ -161,16 +167,35 @@ const Index = () => {
   };
 
   const handleAddProject = () => {
-    toast({
-      title: "Plot New Course",
-      description: "Feature coming soon! Chart your next great adventure.",
-    });
+    setIsProjectModalOpen(true);
   };
 
   const handleAddEvent = () => {
+    setIsEventModalOpen(true);
+  };
+
+  // New handlers for actual adding
+  const handleAddNewProject = (newProject: Omit<Project, 'id'>) => {
+    const project: Project = {
+      ...newProject,
+      id: Date.now().toString()
+    };
+    setProjects([...projects, project]);
     toast({
-      title: "Log New Sighting",
-      description: "Feature coming soon! Keep watch on the horizon.",
+      title: "New Voyage Plotted!",
+      description: `"${project.title}" has been added to your adventures.`,
+    });
+  };
+
+  const handleAddNewEvent = (newEvent: Omit<Event, 'id'>) => {
+    const event: Event = {
+      ...newEvent,
+      id: Date.now().toString()
+    };
+    setEvents([...events, event]);
+    toast({
+      title: "New Sighting Logged!",
+      description: `"${event.title}" has been added to the horizon.`,
     });
   };
 
@@ -382,6 +407,18 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <AddEventModal
+        isOpen={isEventModalOpen}
+        onClose={() => setIsEventModalOpen(false)}
+        onAddEvent={handleAddNewEvent}
+      />
+      <AddProjectModal
+        isOpen={isProjectModalOpen}
+        onClose={() => setIsProjectModalOpen(false)}
+        onAddProject={handleAddNewProject}
+      />
     </>
   );
 };
