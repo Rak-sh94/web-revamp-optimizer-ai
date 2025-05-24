@@ -124,6 +124,90 @@ const Index = () => {
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
+  // Task handlers
+  const handleAddTask = (task: Omit<Task, 'id'>) => {
+    const newTask = { ...task, id: Date.now().toString() };
+    setTasks(prev => [...prev, newTask]);
+    addExperience(10);
+    toast({
+      title: "⚓ New Bounty Added!",
+      description: `${task.title} has been logged in the ship's records.`,
+    });
+  };
+
+  const handleToggleTask = (id: string) => {
+    setTasks(prev => prev.map(task => {
+      if (task.id === id) {
+        const updatedTask = { ...task, completed: !task.completed };
+        if (updatedTask.completed) {
+          addExperience(15);
+          toast({
+            title: "🏴‍☠️ Bounty Claimed!",
+            description: `${task.title} has been completed!`,
+          });
+        }
+        return updatedTask;
+      }
+      return task;
+    }));
+  };
+
+  const handleDeleteTask = (id: string) => {
+    setTasks(prev => prev.filter(task => task.id !== id));
+    toast({
+      title: "🗑️ Bounty Removed",
+      description: "Task has been struck from the records.",
+    });
+  };
+
+  // Project handlers
+  const handleAddProject = () => {
+    setIsProjectModalOpen(true);
+  };
+
+  const handleDeleteProject = (id: string) => {
+    setProjects(prev => prev.filter(project => project.id !== id));
+    toast({
+      title: "🚢 Voyage Cancelled",
+      description: "Project has been removed from the fleet.",
+    });
+  };
+
+  const handleAddNewProject = (project: Omit<Project, 'id'>) => {
+    const newProject = { ...project, id: Date.now().toString() };
+    setProjects(prev => [...prev, newProject]);
+    addExperience(25);
+    toast({
+      title: "🗺️ New Voyage Planned!",
+      description: `${project.title} has been charted for the fleet.`,
+    });
+    setIsProjectModalOpen(false);
+  };
+
+  // Event handlers
+  const handleAddEvent = () => {
+    setIsEventModalOpen(true);
+  };
+
+  const handleDeleteEvent = (id: string) => {
+    setEvents(prev => prev.filter(event => event.id !== id));
+    toast({
+      title: "🔭 Sighting Removed",
+      description: "Event has been cleared from the horizon.",
+    });
+  };
+
+  const handleAddNewEvent = (event: Omit<Event, 'id'>) => {
+    const newEvent = { ...event, id: Date.now().toString() };
+    setEvents(prev => [...prev, newEvent]);
+    addExperience(5);
+    toast({
+      title: "🦜 New Sighting Logged!",
+      description: `${event.title} has been spotted on the horizon.`,
+    });
+    setIsEventModalOpen(false);
+  };
+
   // Save data to localStorage whenever state changes
   useEffect(() => {
     localStorage.setItem('onePiece_tasks', JSON.stringify(tasks));
