@@ -211,6 +211,32 @@ const Index = () => {
             75% { transform: translateX(-5px) translateY(-3px); }
             100% { transform: translateX(0px) translateY(0px); }
           }
+          @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+          }
+          @keyframes header-glow {
+            0%, 100% { 
+              text-shadow: 
+                0 0 10px rgba(0, 191, 255, 0.8),
+                0 0 20px rgba(0, 191, 255, 0.6),
+                0 0 30px rgba(0, 191, 255, 0.4),
+                2px 2px 0px #000,
+                -2px -2px 0px #000,
+                2px -2px 0px #000,
+                -2px 2px 0px #000;
+            }
+            50% { 
+              text-shadow: 
+                0 0 20px rgba(0, 191, 255, 1),
+                0 0 30px rgba(0, 191, 255, 0.8),
+                0 0 40px rgba(0, 191, 255, 0.6),
+                2px 2px 0px #000,
+                -2px -2px 0px #000,
+                2px -2px 0px #000,
+                -2px 2px 0px #000;
+            }
+          }
           .animate-slide-in-left {
             animation: slide-in-left 0.8s ease-out;
           }
@@ -226,6 +252,21 @@ const Index = () => {
           .animate-wave-motion {
             animation: wave-motion 4s ease-in-out infinite;
           }
+          .animate-sparkle {
+            animation: sparkle 2s ease-in-out infinite;
+          }
+          .animate-header-glow {
+            animation: header-glow 3s ease-in-out infinite;
+          }
+          .text-stroke-header {
+            color: #00BFFF;
+            text-shadow: 
+              2px 2px 0px #000,
+              -2px -2px 0px #000,
+              2px -2px 0px #000,
+              -2px 2px 0px #000,
+              0 0 10px rgba(0, 191, 255, 0.5);
+          }
         `
       }} />
       
@@ -233,13 +274,15 @@ const Index = () => {
         {/* Enhanced Animated Background Elements */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-20 left-10 text-6xl animate-wave-motion">🌊</div>
-          <div className="absolute top-40 right-20 text-4xl animate-pulse">⭐</div>
+          <div className="absolute top-40 right-20 text-4xl animate-sparkle">⭐</div>
           <div className="absolute bottom-32 left-20 text-5xl animate-treasure-bounce">🏴‍☠️</div>
           <div className="absolute bottom-20 right-10 text-3xl animate-treasure-bounce delay-500">💎</div>
           <div className="absolute top-60 left-1/4 text-3xl animate-spin duration-[8s]">⚓</div>
           <div className="absolute bottom-40 right-1/3 text-4xl animate-float">🗺️</div>
-          <div className="absolute top-80 right-1/4 text-2xl animate-pulse delay-300">💰</div>
+          <div className="absolute top-80 right-1/4 text-2xl animate-sparkle delay-300">💰</div>
           <div className="absolute top-32 left-1/2 text-2xl animate-wiggle">🦜</div>
+          <div className="absolute top-16 right-1/3 text-3xl animate-bounce delay-700">⚔️</div>
+          <div className="absolute bottom-16 left-1/3 text-2xl animate-pulse delay-1000">🍖</div>
         </div>
 
         {/* Enhanced Floating Elements */}
@@ -256,63 +299,28 @@ const Index = () => {
         <div className="absolute bottom-0 right-0 opacity-5 text-9xl animate-float">🚢</div>
 
         <div className="relative z-10 p-6">
-          {/* Main Header - One Piece Style */}
+          {/* Enhanced Header - One Piece Style matching reference */}
           <div className="text-center mb-8">
             <div className="relative inline-block">
-              {/* Main Logo Container */}
-              <div className="relative bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 px-12 py-8 rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-500 border-8 border-yellow-400">
-                {/* Decorative Corner Elements */}
-                <div className="absolute -top-6 -left-6 w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-red-600 animate-treasure-bounce">
-                  <span className="text-3xl">💀</span>
-                </div>
-                <div className="absolute -top-4 -right-4 w-12 h-12 bg-blue-500 rounded-full animate-bounce delay-300"></div>
-                <div className="absolute -bottom-6 -right-6 w-14 h-14 bg-green-500 rounded-full animate-pulse delay-500"></div>
-                <div className="absolute -bottom-4 -left-4 w-10 h-10 bg-purple-500 rounded-full animate-wiggle"></div>
-                
-                {/* Main Text with One Piece Styling */}
-                <h1 className="text-5xl md:text-7xl font-black text-white tracking-wider relative animate-glow-pulse">
-                  <span className="relative inline-block transform hover:scale-110 transition-transform duration-300">
-                    <span className="absolute inset-0 text-yellow-400 transform translate-x-2 translate-y-2 blur-sm">
-                      RAKESH'S
-                    </span>
-                    <span className="absolute inset-0 text-orange-300 transform translate-x-1 translate-y-1">
-                      RAKESH'S
-                    </span>
-                    <span className="relative text-white" style={{textStroke: '3px #000'}}>
-                      RAKESH'S
-                    </span>
-                  </span>
-                  <br />
-                  <span className="relative inline-block mt-2 transform hover:scale-110 transition-transform duration-300">
-                    <span className="absolute inset-0 text-yellow-400 transform translate-x-2 translate-y-2 blur-sm">
-                      DASHBOARD
-                    </span>
-                    <span className="absolute inset-0 text-orange-300 transform translate-x-1 translate-y-1">
-                      DASHBOARD
-                    </span>
-                    <span className="relative text-white" style={{textStroke: '3px #000'}}>
-                      DASHBOARD
-                    </span>
-                  </span>
-                </h1>
-                
-                {/* Rope Decoration */}
-                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-3/4 h-3 bg-gradient-to-r from-transparent via-orange-800 to-transparent rounded-full opacity-80"></div>
+              {/* Anchor decorations */}
+              <div className="absolute -left-16 top-1/2 transform -translate-y-1/2 text-4xl text-cyan-400 animate-float">⚓</div>
+              <div className="absolute -right-16 top-1/2 transform -translate-y-1/2 text-4xl text-cyan-400 animate-float delay-500">⚓</div>
+              
+              {/* Main Header Text */}
+              <h1 className="text-6xl md:text-7xl font-black text-stroke-header animate-header-glow tracking-wider mb-4">
+                RAKESH'S DASHBOARD
+              </h1>
+              
+              {/* Subtitle Quote */}
+              <div className="text-lg md:text-xl text-cyan-200 font-semibold italic mb-4">
+                "I'M GONNA BE THE KING OF THE PIRATES!" - MONKEY D. LUFFY
               </div>
-            </div>
-            
-            {/* Enhanced Subtitle with Animations */}
-            <div className="mt-8 space-y-3">
-              <p className="text-2xl text-yellow-200 font-bold animate-bounce">
-                🏴‍☠️ <span className="animate-glow-pulse">Navigate Your Adventures Like a True Pirate King!</span> 🏴‍☠️
-              </p>
-              <div className="text-yellow-300 text-xl mt-3 animate-fade-in delay-500">
-                <span className="inline-block animate-wiggle">"</span>
-                <span className="animate-pulse">The sea of productivity awaits, Captain Rakesh!</span>
-                <span className="inline-block animate-wiggle">"</span>
-              </div>
-              <div className="text-blue-200 text-lg animate-wave-motion delay-700">
-                ⚓ Chart your course through the Grand Line of tasks! ⚓
+              
+              {/* Decorative Icons */}
+              <div className="flex justify-center space-x-8 text-2xl">
+                <span className="text-red-400 animate-bounce">⚔️</span>
+                <span className="text-yellow-400 animate-sparkle">✖️</span>
+                <span className="text-cyan-400 animate-pulse">💎</span>
               </div>
             </div>
           </div>
@@ -354,14 +362,18 @@ const Index = () => {
 
           {/* Enhanced Footer Quote */}
           <div className="text-center mt-12 animate-fade-in delay-700">
-            <div className="bg-black/20 backdrop-blur-sm rounded-2xl p-6 max-w-4xl mx-auto border border-yellow-400/30">
-              <div className="text-yellow-200 text-xl font-bold animate-glow-pulse">
-                ⚔️ <span className="animate-bounce inline-block">"THE SEA IS CALLING... SET SAIL TOWARDS YOUR DREAMS!"</span> ⚔️
+            <div className="bg-black/20 backdrop-blur-sm rounded-2xl p-6 max-w-4xl mx-auto border border-cyan-400/30">
+              <div className="flex justify-center items-center space-x-4 mb-2">
+                <span className="text-2xl animate-bounce">⚔️</span>
+                <div className="text-cyan-200 text-xl font-bold animate-glow-pulse">
+                  "THE SEA IS CALLING... SET SAIL TOWARDS YOUR DREAMS!"
+                </div>
+                <span className="text-2xl animate-bounce delay-300">🏴‍☠️</span>
               </div>
               <div className="text-blue-200 text-lg mt-2 animate-pulse">
                 - RORONOA ZORO
               </div>
-              <div className="text-yellow-300 text-sm mt-3 animate-fade-in delay-1000">
+              <div className="text-cyan-300 text-sm mt-3 animate-fade-in delay-1000">
                 <span className="animate-wiggle inline-block">🌊</span>
                 Set sail with Captain Rakesh's legendary crew management system!
                 <span className="animate-wiggle inline-block">🌊</span>
