@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import CaptainsOrders from "@/components/CaptainsOrders";
@@ -176,155 +175,202 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-900 via-blue-800 to-cyan-600 relative overflow-hidden">
-      {/* Enhanced Animated Background Elements */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-20 left-10 text-6xl animate-bounce">🌊</div>
-        <div className="absolute top-40 right-20 text-4xl animate-pulse">⭐</div>
-        <div className="absolute bottom-32 left-20 text-5xl animate-bounce delay-1000">🏴‍☠️</div>
-        <div className="absolute bottom-20 right-10 text-3xl animate-pulse delay-500">💎</div>
-        <div className="absolute top-60 left-1/4 text-3xl animate-spin duration-[8s]">⚓</div>
-        <div className="absolute bottom-40 right-1/3 text-4xl animate-bounce delay-700">🗺️</div>
-        <div className="absolute top-80 right-1/4 text-2xl animate-pulse delay-300">💰</div>
-      </div>
+    <>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-15px) rotate(1deg); }
+            66% { transform: translateY(-10px) rotate(-1deg); }
+          }
+          @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-3deg); }
+            75% { transform: rotate(3deg); }
+          }
+          @keyframes slide-in-left {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+          }
+          @keyframes slide-in-right {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+          }
+          @keyframes glow-pulse {
+            0%, 100% { text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+            50% { text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.6); }
+          }
+          @keyframes treasure-bounce {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-8px) scale(1.1); }
+          }
+          @keyframes wave-motion {
+            0% { transform: translateX(0px) translateY(0px); }
+            25% { transform: translateX(5px) translateY(-3px); }
+            50% { transform: translateX(0px) translateY(-5px); }
+            75% { transform: translateX(-5px) translateY(-3px); }
+            100% { transform: translateX(0px) translateY(0px); }
+          }
+          .animate-slide-in-left {
+            animation: slide-in-left 0.8s ease-out;
+          }
+          .animate-slide-in-right {
+            animation: slide-in-right 0.8s ease-out;
+          }
+          .animate-glow-pulse {
+            animation: glow-pulse 2s ease-in-out infinite;
+          }
+          .animate-treasure-bounce {
+            animation: treasure-bounce 3s ease-in-out infinite;
+          }
+          .animate-wave-motion {
+            animation: wave-motion 4s ease-in-out infinite;
+          }
+        `
+      }} />
+      
+      <div className="min-h-screen bg-gradient-to-b from-blue-900 via-blue-800 to-cyan-600 relative overflow-hidden">
+        {/* Enhanced Animated Background Elements */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-20 left-10 text-6xl animate-wave-motion">🌊</div>
+          <div className="absolute top-40 right-20 text-4xl animate-pulse">⭐</div>
+          <div className="absolute bottom-32 left-20 text-5xl animate-treasure-bounce">🏴‍☠️</div>
+          <div className="absolute bottom-20 right-10 text-3xl animate-treasure-bounce delay-500">💎</div>
+          <div className="absolute top-60 left-1/4 text-3xl animate-spin duration-[8s]">⚓</div>
+          <div className="absolute bottom-40 right-1/3 text-4xl animate-float">🗺️</div>
+          <div className="absolute top-80 right-1/4 text-2xl animate-pulse delay-300">💰</div>
+          <div className="absolute top-32 left-1/2 text-2xl animate-wiggle">🦜</div>
+        </div>
 
-      {/* Floating Elements with Advanced Animations */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-1/3 w-4 h-4 bg-yellow-400 rounded-full animate-ping"></div>
-        <div className="absolute top-1/3 right-10 w-3 h-3 bg-blue-300 rounded-full animate-bounce delay-500"></div>
-        <div className="absolute bottom-1/3 left-10 w-5 h-5 bg-red-400 rounded-full animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-green-400 rounded-full animate-ping delay-700"></div>
-      </div>
+        {/* Enhanced Floating Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-10 left-1/3 w-4 h-4 bg-yellow-400 rounded-full animate-ping"></div>
+          <div className="absolute top-1/3 right-10 w-3 h-3 bg-blue-300 rounded-full animate-bounce delay-500"></div>
+          <div className="absolute bottom-1/3 left-10 w-5 h-5 bg-red-400 rounded-full animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-green-400 rounded-full animate-ping delay-700"></div>
+          <div className="absolute top-1/4 right-1/4 w-3 h-3 bg-yellow-300 rounded-full animate-bounce delay-200"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-4 h-4 bg-purple-400 rounded-full animate-pulse delay-800"></div>
+        </div>
 
-      {/* Animated Ship Silhouette */}
-      <div className="absolute bottom-0 right-0 opacity-5 text-9xl animate-[float_6s_ease-in-out_infinite]">🚢</div>
+        {/* Animated Ship Silhouette */}
+        <div className="absolute bottom-0 right-0 opacity-5 text-9xl animate-float">🚢</div>
 
-      <div className="relative z-10 p-6">
-        {/* Enhanced Main Header with One Piece Logo Style */}
-        <div className="text-center mb-8">
-          <div className="relative inline-block">
-            {/* Main Logo Container with One Piece Style */}
-            <div className="relative bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 px-8 py-6 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-500 border-4 border-white">
-              {/* Skull and Crossbones Icon */}
-              <div className="absolute -top-4 -left-4 w-12 h-12 bg-white rounded-full flex items-center justify-center border-4 border-blue-600 animate-bounce">
-                <span className="text-2xl">💀</span>
+        <div className="relative z-10 p-6">
+          {/* Main Header - One Piece Style */}
+          <div className="text-center mb-8">
+            <div className="relative inline-block">
+              {/* Main Logo Container */}
+              <div className="relative bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 px-12 py-8 rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-500 border-8 border-yellow-400">
+                {/* Decorative Corner Elements */}
+                <div className="absolute -top-6 -left-6 w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-red-600 animate-treasure-bounce">
+                  <span className="text-3xl">💀</span>
+                </div>
+                <div className="absolute -top-4 -right-4 w-12 h-12 bg-blue-500 rounded-full animate-bounce delay-300"></div>
+                <div className="absolute -bottom-6 -right-6 w-14 h-14 bg-green-500 rounded-full animate-pulse delay-500"></div>
+                <div className="absolute -bottom-4 -left-4 w-10 h-10 bg-purple-500 rounded-full animate-wiggle"></div>
+                
+                {/* Main Text with One Piece Styling */}
+                <h1 className="text-5xl md:text-7xl font-black text-white tracking-wider relative animate-glow-pulse">
+                  <span className="relative inline-block transform hover:scale-110 transition-transform duration-300">
+                    <span className="absolute inset-0 text-yellow-400 transform translate-x-2 translate-y-2 blur-sm">
+                      RAKESH'S
+                    </span>
+                    <span className="absolute inset-0 text-orange-300 transform translate-x-1 translate-y-1">
+                      RAKESH'S
+                    </span>
+                    <span className="relative text-white" style={{textStroke: '3px #000'}}>
+                      RAKESH'S
+                    </span>
+                  </span>
+                  <br />
+                  <span className="relative inline-block mt-2 transform hover:scale-110 transition-transform duration-300">
+                    <span className="absolute inset-0 text-yellow-400 transform translate-x-2 translate-y-2 blur-sm">
+                      DASHBOARD
+                    </span>
+                    <span className="absolute inset-0 text-orange-300 transform translate-x-1 translate-y-1">
+                      DASHBOARD
+                    </span>
+                    <span className="relative text-white" style={{textStroke: '3px #000'}}>
+                      DASHBOARD
+                    </span>
+                  </span>
+                </h1>
+                
+                {/* Rope Decoration */}
+                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-3/4 h-3 bg-gradient-to-r from-transparent via-orange-800 to-transparent rounded-full opacity-80"></div>
               </div>
-              
-              {/* Main Text with One Piece Styling */}
-              <h1 className="text-4xl md:text-6xl font-bold text-white tracking-wider relative">
-                <span className="relative inline-block">
-                  <span className="absolute inset-0 text-yellow-400 transform translate-x-1 translate-y-1">
-                    RAKESH'S
-                  </span>
-                  <span className="relative text-white stroke-2 stroke-black">
-                    RAKESH'S
-                  </span>
-                </span>
-                <br />
-                <span className="relative inline-block mt-2">
-                  <span className="absolute inset-0 text-yellow-400 transform translate-x-1 translate-y-1">
-                    DASHBOARD
-                  </span>
-                  <span className="relative text-white stroke-2 stroke-black">
-                    DASHBOARD
-                  </span>
-                </span>
-              </h1>
-              
-              {/* Decorative Elements */}
-              <div className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 rounded-full animate-pulse"></div>
-              <div className="absolute -bottom-3 -right-3 w-6 h-6 bg-yellow-400 rounded-full animate-bounce delay-300"></div>
             </div>
             
-            {/* Rope Decoration */}
-            <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-full h-2 bg-gradient-to-r from-transparent via-orange-600 to-transparent rounded-full opacity-60"></div>
-          </div>
-          
-          {/* Enhanced Subtitle with Animations */}
-          <div className="mt-6 space-y-2">
-            <p className="text-xl text-yellow-200 font-medium animate-fade-in">
-              🏴‍☠️ <span className="animate-pulse">Navigate Your Adventures Like a True Pirate King!</span> 🏴‍☠️
-            </p>
-            <div className="text-yellow-300 text-lg mt-2 animate-bounce delay-500">
-              <span className="inline-block animate-[wiggle_2s_ease-in-out_infinite]">"</span>
-              <span className="animate-pulse">The sea of productivity awaits, Captain Rakesh!</span>
-              <span className="inline-block animate-[wiggle_2s_ease-in-out_infinite]">"</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Enhanced Three Column Layout with Animations */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto animate-fade-in delay-300">
-          {/* Left Column: Captain's Orders */}
-          <div className="lg:col-span-1 animate-slide-in-left">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-2xl h-full hover:bg-white/15 transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl">
-              <CaptainsOrders
-                tasks={tasks}
-                onAddTask={handleAddTask}
-                onToggleTask={handleToggleTask}
-                onDeleteTask={handleDeleteTask}
-              />
+            {/* Enhanced Subtitle with Animations */}
+            <div className="mt-8 space-y-3">
+              <p className="text-2xl text-yellow-200 font-bold animate-bounce">
+                🏴‍☠️ <span className="animate-glow-pulse">Navigate Your Adventures Like a True Pirate King!</span> 🏴‍☠️
+              </p>
+              <div className="text-yellow-300 text-xl mt-3 animate-fade-in delay-500">
+                <span className="inline-block animate-wiggle">"</span>
+                <span className="animate-pulse">The sea of productivity awaits, Captain Rakesh!</span>
+                <span className="inline-block animate-wiggle">"</span>
+              </div>
+              <div className="text-blue-200 text-lg animate-wave-motion delay-700">
+                ⚓ Chart your course through the Grand Line of tasks! ⚓
+              </div>
             </div>
           </div>
 
-          {/* Center Column: Voyage Progress */}
-          <div className="lg:col-span-1 animate-fade-in delay-500">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-2xl h-full hover:bg-white/15 transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl">
-              <VoyageProgress
-                projects={projects}
-                onAddProject={handleAddProject}
-              />
+          {/* Three Column Layout with Enhanced Animations */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto animate-fade-in delay-300">
+            {/* Left Column: Captain's Orders */}
+            <div className="lg:col-span-1 animate-slide-in-left">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-2xl h-full hover:bg-white/15 transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl hover:border-yellow-400/50">
+                <CaptainsOrders
+                  tasks={tasks}
+                  onAddTask={handleAddTask}
+                  onToggleTask={handleToggleTask}
+                  onDeleteTask={handleDeleteTask}
+                />
+              </div>
+            </div>
+
+            {/* Center Column: Voyage Progress */}
+            <div className="lg:col-span-1 animate-fade-in delay-500">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-2xl h-full hover:bg-white/15 transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl hover:border-green-400/50">
+                <VoyageProgress
+                  projects={projects}
+                  onAddProject={handleAddProject}
+                />
+              </div>
+            </div>
+
+            {/* Right Column: Horizon Events */}
+            <div className="lg:col-span-1 animate-slide-in-right">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-2xl h-full hover:bg-white/15 transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl hover:border-purple-400/50">
+                <HorizonEvents
+                  events={events}
+                  onAddEvent={handleAddEvent}
+                />
+              </div>
             </div>
           </div>
 
-          {/* Right Column: Horizon Events */}
-          <div className="lg:col-span-1 animate-slide-in-right">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-2xl h-full hover:bg-white/15 transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl">
-              <HorizonEvents
-                events={events}
-                onAddEvent={handleAddEvent}
-              />
+          {/* Enhanced Footer Quote */}
+          <div className="text-center mt-12 animate-fade-in delay-700">
+            <div className="bg-black/20 backdrop-blur-sm rounded-2xl p-6 max-w-4xl mx-auto border border-yellow-400/30">
+              <div className="text-yellow-200 text-xl font-bold animate-glow-pulse">
+                ⚔️ <span className="animate-bounce inline-block">"THE SEA IS CALLING... SET SAIL TOWARDS YOUR DREAMS!"</span> ⚔️
+              </div>
+              <div className="text-blue-200 text-lg mt-2 animate-pulse">
+                - RORONOA ZORO
+              </div>
+              <div className="text-yellow-300 text-sm mt-3 animate-fade-in delay-1000">
+                <span className="animate-wiggle inline-block">🌊</span>
+                Set sail with Captain Rakesh's legendary crew management system!
+                <span className="animate-wiggle inline-block">🌊</span>
+              </div>
             </div>
-          </div>
-        </div>
-
-        {/* Enhanced Footer with Animations */}
-        <div className="text-center mt-12 animate-fade-in delay-700">
-          <div className="text-yellow-200 text-lg font-medium animate-pulse">
-            ⚓ <span className="animate-bounce inline-block">"Chart your course through the Grand Line of productivity!"</span> ⚓
-          </div>
-          <div className="text-blue-200 text-sm mt-2 animate-fade-in delay-1000">
-            <span className="animate-pulse">Set sail with Captain Rakesh's legendary crew management system!</span>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
-        }
-        @keyframes wiggle {
-          0%, 100% { transform: rotate(0deg); }
-          25% { transform: rotate(-5deg); }
-          75% { transform: rotate(5deg); }
-        }
-        @keyframes slide-in-left {
-          from { transform: translateX(-100px); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes slide-in-right {
-          from { transform: translateX(100px); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-        .animate-slide-in-left {
-          animation: slide-in-left 0.8s ease-out;
-        }
-        .animate-slide-in-right {
-          animation: slide-in-right 0.8s ease-out;
-        }
-      `}</style>
-    </div>
+    </>
   );
 };
 
