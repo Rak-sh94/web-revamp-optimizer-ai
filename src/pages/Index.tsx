@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import CaptainsOrders from "@/components/CaptainsOrders";
@@ -5,6 +6,10 @@ import VoyageProgress from "@/components/VoyageProgress";
 import HorizonEvents from "@/components/HorizonEvents";
 import AddEventModal from "@/components/AddEventModal";
 import AddProjectModal from "@/components/AddProjectModal";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Settings, Moon, Sun, Download, Trophy, Star } from "lucide-react";
 
 interface Task {
   id: string;
@@ -111,6 +116,25 @@ const Index = () => {
     ];
   });
 
+  // Dark mode state
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  
+  // Gamification state
+  const [captainLevel, setCaptainLevel] = useState(() => {
+    const saved = localStorage.getItem('captainLevel');
+    return saved ? parseInt(saved) : 1;
+  });
+  
+  const [experiencePoints, setExperiencePoints] = useState(() => {
+    const saved = localStorage.getItem('experiencePoints');
+    return saved ? parseInt(saved) : 75;
+  });
+
+  const [pirateCoins, setPirateCoins] = useState(() => {
+    const saved = localStorage.getItem('pirateCoins');
+    return saved ? parseInt(saved) : 250;
+  });
+
   // Save data to localStorage whenever state changes
   useEffect(() => {
     localStorage.setItem('onePiece_tasks', JSON.stringify(tasks));
@@ -124,9 +148,42 @@ const Index = () => {
     localStorage.setItem('onePiece_events', JSON.stringify(events));
   }, [events]);
 
+  useEffect(() => {
+    localStorage.setItem('captainLevel', captainLevel.toString());
+    localStorage.setItem('experiencePoints', experiencePoints.toString());
+    localStorage.setItem('pirateCoins', pirateCoins.toString());
+  }, [captainLevel, experiencePoints, pirateCoins]);
+
   // Modal state
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+
+  // Get captain rank based on level
+  const getCaptainRank = (level: number) => {
+    if (level >= 20) return { rank: 'Admiral', color: 'text-purple-400', icon: '👑' };
+    if (level >= 10) return { rank: 'Captain', color: 'text-yellow-400', icon: '⚓' };
+    if (level >= 5) return { rank: 'First Mate', color: 'text-blue-400', icon: '🗡️' };
+    return { rank: 'Cadet', color: 'text-green-400', icon: '🦜' };
+  };
+
+  const currentRank = getCaptainRank(captainLevel);
+
+  // Add experience points function
+  const addExperience = (points: number) => {
+    const newXP = experiencePoints + points;
+    const newLevel = Math.floor(newXP / 100) + 1;
+    
+    if (newLevel > captainLevel) {
+      setCaptainLevel(newLevel);
+      toast({
+        title: "🎉 RANK UP!",
+        description: `You've reached ${getCaptainRank(newLevel).rank} level ${newLevel}!`,
+      });
+    }
+    
+    setExperiencePoints(newXP);
+    setPirateCoins(prev => prev + points);
+  };
 
   // Task handlers
   const handleAddTask = (newTask: Omit<Task, 'id'>) => {
@@ -135,9 +192,10 @@ const Index = () => {
       id: Date.now().toString()
     };
     setTasks([...tasks, task]);
+    addExperience(5);
     toast({
-      title: "New Bounty Added!",
-      description: `"${task.title}" has been added to your hunt list.`,
+      title: "⚔️ New Bounty Added!",
+      description: `"${task.title}" has been added to your hunt list. +5 XP!`,
     });
   };
 
@@ -146,10 +204,16 @@ const Index = () => {
       task.id === id ? { ...task, completed: !task.completed } : task
     ));
     const task = tasks.find(t => t.id === id);
-    if (task) {
+    if (task && !task.completed) {
+      addExperience(10);
       toast({
-        title: task.completed ? "Bounty Reopened!" : "Bounty Claimed!",
-        description: `"${task.title}" ${task.completed ? 'is back on the hunt' : 'has been completed'}.`,
+        title: "🏆 Bounty Claimed!",
+        description: `"${task.title}" completed! +10 XP & 10 coins!`,
+      });
+    } else if (task) {
+      toast({
+        title: "⚡ Bounty Reopened!",
+        description: `"${task.title}" is back on the hunt.`,
       });
     }
   };
@@ -159,7 +223,7 @@ const Index = () => {
     setTasks(tasks.filter(task => task.id !== id));
     if (task) {
       toast({
-        title: "Bounty Abandoned",
+        title: "🚫 Bounty Abandoned",
         description: `"${task.title}" has been removed from your list.`,
         variant: "destructive"
       });
@@ -181,9 +245,10 @@ const Index = () => {
       id: Date.now().toString()
     };
     setProjects([...projects, project]);
+    addExperience(15);
     toast({
-      title: "New Voyage Plotted!",
-      description: `"${project.title}" has been added to your adventures.`,
+      title: "🗺️ New Voyage Plotted!",
+      description: `"${project.title}" has been added to your adventures. +15 XP!`,
     });
   };
 
@@ -193,9 +258,10 @@ const Index = () => {
       id: Date.now().toString()
     };
     setEvents([...events, event]);
+    addExperience(3);
     toast({
-      title: "New Sighting Logged!",
-      description: `"${event.title}" has been added to the horizon.`,
+      title: "🔭 New Sighting Logged!",
+      description: `"${event.title}" has been added to the horizon. +3 XP!`,
     });
   };
 
@@ -205,7 +271,7 @@ const Index = () => {
     setProjects(projects.filter(project => project.id !== id));
     if (project) {
       toast({
-        title: "Voyage Abandoned",
+        title: "⚓ Voyage Abandoned",
         description: `"${project.title}" has been removed from your adventures.`,
         variant: "destructive"
       });
@@ -217,11 +283,27 @@ const Index = () => {
     setEvents(events.filter(event => event.id !== id));
     if (event) {
       toast({
-        title: "Sighting Removed",
+        title: "🌊 Sighting Removed",
         description: `"${event.title}" has been cleared from the horizon.`,
         variant: "destructive"
       });
     }
+  };
+
+  const exportData = () => {
+    const data = { tasks, projects, events, captainLevel, experiencePoints, pirateCoins };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'captain-fleet-backup.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "📜 Logbook Exported!",
+      description: "Your fleet data has been saved to your device.",
+    });
   };
 
   return (
@@ -287,19 +369,18 @@ const Index = () => {
                 -3px 3px 0px #000;
             }
           }
-          @keyframes clouds-move {
-            0% { transform: translateX(-50px); }
-            100% { transform: translateX(50px); }
+          @keyframes hover-glow {
+            from { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+            to { box-shadow: 0 0 30px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.4); }
           }
-          @keyframes mist-float {
-            0%, 100% { 
-              transform: translateX(0px) translateY(0px);
-              opacity: 0.2;
-            }
-            50% { 
-              transform: translateX(30px) translateY(-10px);
-              opacity: 0.4;
-            }
+          @keyframes button-bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+          }
+          @keyframes coin-flip {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(180deg); }
+            100% { transform: rotateY(360deg); }
           }
           .animate-slide-in-left {
             animation: slide-in-left 0.8s ease-out;
@@ -322,11 +403,14 @@ const Index = () => {
           .animate-header-glow {
             animation: header-glow 3s ease-in-out infinite;
           }
-          .animate-clouds-move {
-            animation: clouds-move 20s ease-in-out infinite;
+          .animate-hover-glow:hover {
+            animation: hover-glow 0.3s ease-out forwards;
           }
-          .animate-mist-float {
-            animation: mist-float 15s ease-in-out infinite;
+          .animate-button-bounce:hover {
+            animation: button-bounce 0.5s ease-in-out;
+          }
+          .animate-coin-flip {
+            animation: coin-flip 2s ease-in-out infinite;
           }
           .text-stroke-header {
             color: #ffd700;
@@ -336,6 +420,10 @@ const Index = () => {
               3px -3px 0px #000,
               -3px 3px 0px #000,
               0 0 10px rgba(255, 215, 0, 0.5);
+          }
+          .text-enhanced {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            font-weight: 600;
           }
           .pirate-ship-bg {
             background-image: url('/lovable-uploads/e60fdb28-1ac9-42dd-894b-3ec42d23d4c0.png');
@@ -347,23 +435,112 @@ const Index = () => {
           .dark-overlay {
             background: linear-gradient(
               180deg,
-              rgba(0, 0, 0, 0.8) 0%,
-              rgba(0, 0, 0, 0.6) 30%,
-              rgba(0, 0, 0, 0.7) 70%,
+              rgba(0, 0, 0, 0.85) 0%,
+              rgba(0, 0, 0, 0.7) 30%,
+              rgba(0, 0, 0, 0.75) 70%,
               rgba(0, 0, 0, 0.9) 100%
             );
+          }
+          .glass-panel {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            box-shadow: 
+              0 8px 32px rgba(0, 0, 0, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+          }
+          .enhanced-button {
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+            border: 2px solid #60a5fa;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+          }
+          .enhanced-button:hover {
+            background: linear-gradient(45deg, #1e40af, #2563eb);
+            box-shadow: 0 6px 25px rgba(59, 130, 246, 0.5);
+            transform: translateY(-2px);
           }
         `
       }} />
       
-      <div className="min-h-screen relative overflow-hidden pirate-ship-bg">
+      <div className={`min-h-screen relative overflow-hidden transition-all duration-500 ${isDarkMode ? 'pirate-ship-bg' : 'bg-gradient-to-br from-blue-200 via-cyan-200 to-blue-300'}`}>
         {/* Dark Overlay for Better Text Readability */}
-        <div className="absolute inset-0 dark-overlay"></div>
+        {isDarkMode && <div className="absolute inset-0 dark-overlay"></div>}
+
+        {/* Top Navigation Bar */}
+        <div className="relative z-30 bg-black/90 backdrop-blur-sm border-b-2 border-yellow-500/50 p-4">
+          <div className="max-w-7xl mx-auto flex justify-between items-center">
+            {/* Captain Stats */}
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-2">
+                <span className="text-2xl">{currentRank.icon}</span>
+                <div>
+                  <div className={`font-bold text-lg ${currentRank.color} text-enhanced`}>
+                    {currentRank.rank} Rakesh
+                  </div>
+                  <div className="text-yellow-300 text-sm font-semibold">Level {captainLevel}</div>
+                </div>
+              </div>
+              
+              {/* XP Bar */}
+              <div className="flex items-center space-x-3">
+                <div className="text-blue-300 font-semibold">XP:</div>
+                <div className="w-32">
+                  <Progress 
+                    value={(experiencePoints % 100)} 
+                    className="h-3 bg-gray-700"
+                  />
+                </div>
+                <div className="text-blue-200 text-sm font-bold">
+                  {experiencePoints % 100}/100
+                </div>
+              </div>
+              
+              {/* Pirate Coins */}
+              <div className="flex items-center space-x-2">
+                <span className="text-2xl animate-coin-flip">🪙</span>
+                <span className="text-yellow-400 font-bold text-lg text-enhanced">
+                  {pirateCoins}
+                </span>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center space-x-3">
+              <Button
+                onClick={exportData}
+                variant="outline"
+                size="sm"
+                className="enhanced-button animate-button-bounce text-white border-blue-400 hover:bg-blue-600"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Export
+              </Button>
+              
+              <Button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                variant="outline"
+                size="sm"
+                className="enhanced-button animate-button-bounce text-white border-yellow-400 hover:bg-yellow-600"
+              >
+                {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                className="enhanced-button animate-button-bounce text-white border-purple-400 hover:bg-purple-600"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
 
         {/* Floating Mist/Fog Effects */}
-        <div className="absolute top-20 left-1/4 w-64 h-32 bg-white rounded-full blur-3xl opacity-5 animate-mist-float"></div>
-        <div className="absolute top-40 right-1/3 w-48 h-24 bg-gray-300 rounded-full blur-3xl opacity-10 animate-mist-float delay-1000"></div>
-        <div className="absolute bottom-32 left-1/3 w-56 h-28 bg-white rounded-full blur-3xl opacity-5 animate-mist-float delay-2000"></div>
+        <div className="absolute top-20 left-1/4 w-64 h-32 bg-white rounded-full blur-3xl opacity-5 animate-wave-motion"></div>
+        <div className="absolute top-40 right-1/3 w-48 h-24 bg-gray-300 rounded-full blur-3xl opacity-10 animate-wave-motion delay-1000"></div>
+        <div className="absolute bottom-32 left-1/3 w-56 h-28 bg-white rounded-full blur-3xl opacity-5 animate-wave-motion delay-2000"></div>
 
         {/* Enhanced Animated Background Elements */}
         <div className="absolute inset-0 opacity-20 z-10">
@@ -389,26 +566,26 @@ const Index = () => {
           <div className="absolute bottom-1/4 left-1/3 w-4 h-4 bg-yellow-400 rounded-full animate-pulse delay-800"></div>
         </div>
 
-        <div className="relative z-20 p-6">
+        <div className="relative z-20 p-4 md:p-6">
           {/* Enhanced Header - Pirate theme with gold accents */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-6 md:mb-8">
             <div className="relative inline-block">
               {/* Anchor decorations */}
-              <div className="absolute -left-16 top-1/2 transform -translate-y-1/2 text-4xl text-yellow-400 animate-float">⚓</div>
-              <div className="absolute -right-16 top-1/2 transform -translate-y-1/2 text-4xl text-yellow-400 animate-float delay-500">⚓</div>
+              <div className="absolute -left-12 md:-left-16 top-1/2 transform -translate-y-1/2 text-3xl md:text-4xl text-yellow-400 animate-float">⚓</div>
+              <div className="absolute -right-12 md:-right-16 top-1/2 transform -translate-y-1/2 text-3xl md:text-4xl text-yellow-400 animate-float delay-500">⚓</div>
               
               {/* Main Header Text */}
-              <h1 className="text-6xl md:text-7xl font-black text-stroke-header animate-header-glow tracking-wider mb-4">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-stroke-header animate-header-glow tracking-wider mb-4">
                 CAPTAIN RAKESH'S FLEET
               </h1>
               
               {/* Subtitle Quote */}
-              <div className="text-lg md:text-xl text-yellow-100 font-semibold italic mb-4 drop-shadow-lg">
+              <div className="text-base md:text-lg lg:text-xl text-yellow-100 font-semibold italic mb-4 drop-shadow-lg text-enhanced px-4">
                 "Experience is not the number of years we spent, it's the number of situations we faced."
               </div>
               
               {/* Decorative Icons */}
-              <div className="flex justify-center space-x-8 text-2xl">
+              <div className="flex justify-center space-x-6 md:space-x-8 text-xl md:text-2xl">
                 <span className="text-yellow-500 animate-bounce">⚔️</span>
                 <span className="text-yellow-400 animate-sparkle">✖️</span>
                 <span className="text-yellow-500 animate-pulse">💎</span>
@@ -417,10 +594,10 @@ const Index = () => {
           </div>
 
           {/* Three Column Layout with Enhanced Animations */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto animate-fade-in delay-300">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto animate-fade-in delay-300">
             {/* Left Column: Captain's Orders */}
             <div className="lg:col-span-1 animate-slide-in-left">
-              <div className="bg-black/80 backdrop-blur-sm rounded-xl p-6 border border-yellow-500/40 shadow-2xl h-full hover:bg-black/85 transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl hover:border-yellow-400/60">
+              <div className="glass-panel rounded-xl p-4 md:p-6 shadow-2xl h-full hover:shadow-3xl transition-all duration-500 hover:scale-[1.02] animate-hover-glow">
                 <CaptainsOrders
                   tasks={tasks}
                   onAddTask={handleAddTask}
@@ -432,7 +609,7 @@ const Index = () => {
 
             {/* Center Column: Voyage Progress */}
             <div className="lg:col-span-1 animate-fade-in delay-500">
-              <div className="bg-black/80 backdrop-blur-sm rounded-xl p-6 border border-yellow-500/40 shadow-2xl h-full hover:bg-black/85 transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl hover:border-yellow-400/60">
+              <div className="glass-panel rounded-xl p-4 md:p-6 shadow-2xl h-full hover:shadow-3xl transition-all duration-500 hover:scale-[1.02] animate-hover-glow">
                 <VoyageProgress
                   projects={projects}
                   onAddProject={handleAddProject}
@@ -443,7 +620,7 @@ const Index = () => {
 
             {/* Right Column: Horizon Events */}
             <div className="lg:col-span-1 animate-slide-in-right">
-              <div className="bg-black/80 backdrop-blur-sm rounded-xl p-6 border border-yellow-500/40 shadow-2xl h-full hover:bg-black/85 transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl hover:border-yellow-400/60">
+              <div className="glass-panel rounded-xl p-4 md:p-6 shadow-2xl h-full hover:shadow-3xl transition-all duration-500 hover:scale-[1.02] animate-hover-glow">
                 <HorizonEvents
                   events={events}
                   onAddEvent={handleAddEvent}
@@ -454,19 +631,19 @@ const Index = () => {
           </div>
 
           {/* Enhanced Footer Quote */}
-          <div className="text-center mt-12 animate-fade-in delay-700">
-            <div className="bg-black/70 backdrop-blur-sm rounded-2xl p-6 max-w-4xl mx-auto border border-yellow-500/40">
+          <div className="text-center mt-8 md:mt-12 animate-fade-in delay-700">
+            <div className="glass-panel rounded-2xl p-4 md:p-6 max-w-4xl mx-auto">
               <div className="flex justify-center items-center space-x-4 mb-2">
-                <span className="text-2xl animate-bounce text-yellow-500">⚔️</span>
-                <div className="text-yellow-300 text-xl font-bold animate-glow-pulse">
+                <span className="text-xl md:text-2xl animate-bounce text-yellow-500">⚔️</span>
+                <div className="text-yellow-300 text-lg md:text-xl font-bold animate-glow-pulse text-enhanced">
                   "THE SEA IS CALLING... SET SAIL TOWARDS YOUR DREAMS!"
                 </div>
-                <span className="text-2xl animate-bounce delay-300 text-yellow-500">🏴‍☠️</span>
+                <span className="text-xl md:text-2xl animate-bounce delay-300 text-yellow-500">🏴‍☠️</span>
               </div>
-              <div className="text-yellow-100 text-lg mt-2 animate-pulse">
+              <div className="text-yellow-100 text-base md:text-lg mt-2 animate-pulse text-enhanced">
                 - CAPTAIN JACK SPARROW
               </div>
-              <div className="text-yellow-200 text-sm mt-3 animate-fade-in delay-1000">
+              <div className="text-yellow-200 text-sm md:text-base mt-3 animate-fade-in delay-1000 text-enhanced px-4">
                 <span className="animate-wiggle inline-block text-yellow-500">🌊</span>
                 Navigate the treacherous waters of productivity with Captain Rakesh's legendary fleet management system!
                 <span className="animate-wiggle inline-block text-yellow-500">🌊</span>
