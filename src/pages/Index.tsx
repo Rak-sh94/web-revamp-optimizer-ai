@@ -287,6 +287,31 @@ const Index = () => {
                 -2px 2px 0px #000;
             }
           }
+          @keyframes ship-sail {
+            0% { transform: translateX(-200px) translateY(20px) rotate(-5deg); }
+            50% { transform: translateX(calc(50vw - 100px)) translateY(0px) rotate(0deg); }
+            100% { transform: translateX(calc(100vw + 200px)) translateY(10px) rotate(5deg); }
+          }
+          @keyframes ocean-waves {
+            0%, 100% { 
+              background-position: 0% 50%;
+              opacity: 0.3;
+            }
+            50% { 
+              background-position: 100% 50%;
+              opacity: 0.5;
+            }
+          }
+          @keyframes mist-float {
+            0%, 100% { 
+              transform: translateX(0px) translateY(0px);
+              opacity: 0.1;
+            }
+            50% { 
+              transform: translateX(30px) translateY(-10px);
+              opacity: 0.3;
+            }
+          }
           .animate-slide-in-left {
             animation: slide-in-left 0.8s ease-out;
           }
@@ -308,6 +333,15 @@ const Index = () => {
           .animate-header-glow {
             animation: header-glow 3s ease-in-out infinite;
           }
+          .animate-ship-sail {
+            animation: ship-sail 20s ease-in-out infinite;
+          }
+          .animate-ocean-waves {
+            animation: ocean-waves 8s ease-in-out infinite;
+          }
+          .animate-mist-float {
+            animation: mist-float 15s ease-in-out infinite;
+          }
           .text-stroke-header {
             color: #ef4444;
             text-shadow: 
@@ -317,12 +351,42 @@ const Index = () => {
               -2px 2px 0px #000,
               0 0 10px rgba(239, 68, 68, 0.5);
           }
+          .ocean-gradient {
+            background: linear-gradient(180deg, 
+              rgba(0, 0, 0, 1) 0%,
+              rgba(15, 23, 42, 0.9) 30%,
+              rgba(30, 41, 59, 0.8) 60%,
+              rgba(51, 65, 85, 0.7) 100%
+            );
+          }
         `
       }} />
       
-      <div className="min-h-screen bg-black relative overflow-hidden">
+      <div className="min-h-screen bg-black relative overflow-hidden ocean-gradient">
+        {/* Animated Ocean Waves Background */}
+        <div className="absolute inset-0 opacity-20 animate-ocean-waves"
+             style={{
+               background: `radial-gradient(ellipse at center, rgba(59, 130, 246, 0.3) 0%, transparent 70%),
+                           linear-gradient(90deg, rgba(29, 78, 216, 0.2) 0%, rgba(59, 130, 246, 0.3) 50%, rgba(29, 78, 216, 0.2) 100%)`,
+               backgroundSize: '200% 100%'
+             }}>
+        </div>
+
+        {/* Sailing Pirate Ship */}
+        <div className="absolute bottom-20 left-0 opacity-30 animate-ship-sail z-0">
+          <div className="text-8xl filter drop-shadow-2xl">🏴‍☠️</div>
+          {/* Ship wake effect */}
+          <div className="absolute -bottom-4 -right-8 text-4xl opacity-50 animate-wave-motion">〰️</div>
+          <div className="absolute -bottom-2 -right-16 text-3xl opacity-30 animate-wave-motion delay-500">〰️</div>
+        </div>
+
+        {/* Floating Mist/Fog */}
+        <div className="absolute top-32 left-1/4 w-64 h-32 bg-gray-600 rounded-full blur-3xl opacity-10 animate-mist-float"></div>
+        <div className="absolute top-48 right-1/3 w-48 h-24 bg-gray-500 rounded-full blur-3xl opacity-15 animate-mist-float delay-1000"></div>
+        <div className="absolute bottom-40 left-1/3 w-56 h-28 bg-gray-700 rounded-full blur-3xl opacity-10 animate-mist-float delay-2000"></div>
+
         {/* Enhanced Animated Background Elements */}
-        <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 opacity-10 z-10">
           <div className="absolute top-20 left-10 text-6xl animate-wave-motion text-red-500">🌊</div>
           <div className="absolute top-40 right-20 text-4xl animate-sparkle text-red-400">⭐</div>
           <div className="absolute bottom-32 left-20 text-5xl animate-treasure-bounce text-red-500">🏴‍☠️</div>
@@ -336,7 +400,7 @@ const Index = () => {
         </div>
 
         {/* Enhanced Floating Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
           <div className="absolute top-10 left-1/3 w-4 h-4 bg-red-500 rounded-full animate-ping"></div>
           <div className="absolute top-1/3 right-10 w-3 h-3 bg-red-400 rounded-full animate-bounce delay-500"></div>
           <div className="absolute bottom-1/3 left-10 w-5 h-5 bg-red-600 rounded-full animate-pulse delay-1000"></div>
@@ -345,10 +409,10 @@ const Index = () => {
           <div className="absolute bottom-1/4 left-1/3 w-4 h-4 bg-red-400 rounded-full animate-pulse delay-800"></div>
         </div>
 
-        {/* Animated Ship Silhouette */}
-        <div className="absolute bottom-0 right-0 opacity-5 text-9xl animate-float text-red-500">🚢</div>
+        {/* Distant Island Silhouette */}
+        <div className="absolute bottom-0 right-0 opacity-5 text-9xl animate-float text-red-500 z-0">🏝️</div>
 
-        <div className="relative z-10 p-6">
+        <div className="relative z-20 p-6">
           {/* Enhanced Header - Dark theme with red accents */}
           <div className="text-center mb-8">
             <div className="relative inline-block">
