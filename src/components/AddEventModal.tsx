@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -24,11 +23,18 @@ interface AddEventModalProps {
 }
 
 const AddEventModal: React.FC<AddEventModalProps> = ({ isOpen, onClose, onAddEvent }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    title: string;
+    date: string;
+    time: string;
+    type: 'meeting' | 'deadline' | 'event' | 'reminder';
+    location: string;
+    description: string;
+  }>({
     title: '',
     date: '',
     time: '',
-    type: 'event' as const,
+    type: 'event',
     location: '',
     description: ''
   });
@@ -102,7 +108,7 @@ const AddEventModal: React.FC<AddEventModalProps> = ({ isOpen, onClose, onAddEve
 
           <div>
             <Label className="text-blue-800 font-semibold">Event Type</Label>
-            <Select value={formData.type} onValueChange={(value: 'meeting' | 'deadline' | 'event' | 'reminder') => setFormData({ ...formData, type: value })}>
+            <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value as 'meeting' | 'deadline' | 'event' | 'reminder' })}>
               <SelectTrigger className="border-blue-300">
                 <SelectValue />
               </SelectTrigger>
