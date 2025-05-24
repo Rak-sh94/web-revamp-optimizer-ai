@@ -61,15 +61,15 @@ const HorizonEvents: React.FC<HorizonEventsProps> = ({ events, onAddEvent }) => 
               {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </div>
             <div className="grid grid-cols-7 gap-1 text-xs">
-              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
-                <div key={day} className="text-center font-semibold text-blue-700 p-1">
+              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
+                <div key={`day-header-${index}`} className="text-center font-semibold text-blue-700 p-1">
                   {day}
                 </div>
               ))}
-              {/* Simplified calendar grid */}
+              {/* Fixed calendar grid with proper unique keys */}
               {Array.from({ length: 30 }, (_, i) => (
                 <div
-                  key={i}
+                  key={`calendar-day-${i + 1}`}
                   className={`text-center p-1 text-blue-700 ${
                     events.some(event => new Date(event.date).getDate() === i + 1)
                       ? 'bg-yellow-400 rounded-full font-bold'
