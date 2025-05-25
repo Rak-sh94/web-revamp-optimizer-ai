@@ -94,7 +94,6 @@ const AnimeDashboard = () => {
   };
 
   const handleAddEvent = () => {
-    // For now, just add a sample event - could be expanded with a modal
     const newEvent: Event = {
       id: Date.now().toString(),
       title: 'New Anime Event',
@@ -112,17 +111,13 @@ const AnimeDashboard = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-      {/* Anime Background Effects */}
       <BackgroundEffects />
       
-      {/* Animated Background Pattern */}
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] animate-pulse"></div>
+        <div className="absolute top-0 left-0 w-full h-full animate-pulse"></div>
       </div>
 
-      {/* Main Content */}
       <div className="relative z-20 container mx-auto px-6 py-8">
-        {/* Header */}
         <div className="text-center mb-12">
           <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent">
             <h1 className="text-6xl md:text-8xl font-bold mb-4 animate-pulse">
@@ -138,9 +133,7 @@ const AnimeDashboard = () => {
           </div>
         </div>
 
-        {/* Dashboard Grid */}
         <div className="grid lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
-          {/* Captain's Orders (To-Do Tasks) */}
           <div className="bg-gradient-to-br from-amber-900/20 to-yellow-900/20 backdrop-blur-lg rounded-3xl p-8 border border-yellow-500/30 shadow-2xl">
             <CaptainsOrders
               tasks={tasks}
@@ -150,7 +143,6 @@ const AnimeDashboard = () => {
             />
           </div>
 
-          {/* Horizon Events */}
           <div className="bg-gradient-to-br from-cyan-900/20 to-blue-900/20 backdrop-blur-lg rounded-3xl p-8 border border-blue-500/30 shadow-2xl">
             <HorizonEvents
               events={events}
@@ -160,7 +152,6 @@ const AnimeDashboard = () => {
           </div>
         </div>
 
-        {/* Stats Bar */}
         <div className="mt-12 bg-gradient-to-r from-purple-900/30 to-pink-900/30 backdrop-blur-lg rounded-2xl p-6 border border-purple-500/30">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div>
